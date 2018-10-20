@@ -1,0 +1,60 @@
+C51 COMPILER V9.01   DELAY                                                                 10/20/2018 20:26:46 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN delay.obj
+COMPILER INVOKED BY: C:\Program Files (x86)\Keil\C51\BIN\C51.EXE delay_c\delay.c BROWSE DEBUG OBJECTEXTEND PRINT(.\delay
+                    -.lst) OBJECT(delay.obj)
+
+line level    source
+
+   1          #include "delay.h"
+   2          
+   3          
+   4          void delay1ms()            //@12MHz
+   5          {
+   6   1              uint i,j;
+   7   1          for(j=1;j>0;j--)
+   8   1          for(i=112;i>0;i--);
+   9   1      }
+  10          
+  11          /*********************************************************************************************
+  12          函数名：12MHZ晶振延时s ms
+  13          调  用：delay_ms（s）
+  14          参  数：s  // 延时s ms
+  15          返回值：无
+  16          **********************************************************************************************/
+  17          void delay_ms(usint s)
+  18          {
+  19   1              while(s--)
+  20   1              {
+  21   2                      delay1ms();
+  22   2              }
+  23   1      }
+  24          
+  25          /*********************************************************************************************
+  26          函数名：12MHZ晶振延时10 us
+  27          调  用：delay10us（）
+  28          参  数：无
+  29          返回值：无
+  30          **********************************************************************************************/
+  31          void delay10us()
+  32          {
+  33   1              _nop_();_nop_();
+  34   1              _nop_();_nop_();
+  35   1              _nop_();_nop_();
+  36   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     54    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

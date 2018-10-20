@@ -1,0 +1,86 @@
+C51 COMPILER V9.01   MAIN                                                                  10/20/2018 20:26:46 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Program Files (x86)\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //////////////////////////////////////////////////////////////////////////////////       
+   2          //              SSD1306_OLED_128*64ËµÃ÷(Ñ¡ÓÃSPI½Ó¿Ú): 
+   3          //              ----------------------------------------------------------------
+   4          //              GND    µçÔ´µØ
+   5          //              VCC  ½Ó5V»ò3.3vµçÔ´
+   6          //              D0   P1^0£¨SCL£©
+   7          //              D1   P1^1£¨SDA£©
+   8          //              RES  ½ÓP12
+   9          //              DC   ½ÓP13
+  10          //              CS   ½ÓP14               
+  11          //              ----------------------------------------------------------------
+  12          //******************************************************************************/
+  13          #include "reg51.h"
+  14          #include "header_file/oled.h"
+  15          //#include "header_file/bmp.h"                    //51²âÊÔ£¬½ÚÊ¡¿Õ¼ä                                      
+  16          #include "clock_c/clock.h"
+  17          #include "key_c/key.h"
+  18          
+  19          uchar time_one[6];                              //Ê±¼ä°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
+  20          uchar day_one[11];                              //ÈÕÆÚ°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
+  21          uchar time_two[4];                              //Ê±¼ä´¢´æÊý×é£¬Ê±·ÖÃë¸÷Õ¼Ò»Î»
+  22          uchar day_two[4];                               //ÈÕÆÚ´¢´æÊý×é£¬ÄêÔÂÈÕ¸÷Õ¼Ò»Î»
+  23          uchar time_day[13];                             //Î´¼ÆËãÆ«ÒÆµØÖ·µÄÊ±¼äÈÕÆÚ
+  24          uchar SIZE;                                             //×ÖÌå´óÐ¡Ñ¡Ôñ£¬16/12
+  25          uchar key[3] = 1;                                       //°´¼ü¼ì²âº¯Êý
+  26          uchar key_lest;                 //°´¼ü¼ì²â·µ»ØÖµ
+  27          
+  28          
+  29          void time_day_out(uchar *p)
+  30          {
+  31   1      
+  32   1              SIZE = *p;
+  33   1              time_date(time_one,day_one,time_two,day_two,time_day);  
+  34   1              OLED_ShowCHinese1(20,1,time_day[0]);// Ð¡Ê±
+  35   1              OLED_ShowCHinese1(37,1,time_day[1]);
+  36   1              OLED_ShowCHinese1(52,1,10);//:
+  37   1              OLED_ShowCHinese1(68,1,time_day[2]);//·ÖÖÓ
+  38   1              OLED_ShowCHinese1(85,1,time_day[3]);
+  39   1              OLED_ShowChar(102,2,time_day[4]+'0',&SIZE);
+  40   1              OLED_ShowChar(108,2,time_day[5]+'0',&SIZE);
+  41   1              SIZE = 12;
+  42   1              OLED_ShowString(47,5,day_one,&SIZE);
+  43   1      }
+  44          
+  45          void  main()
+  46          {                 
+  47   1              OLED_Init();                            //³õÊ¼»¯OLED  
+  48   1              OLED_Clear();
+  49   1              time_init(); 
+  50   1      /*      OLED_Clear();                                   //8051²âÊÔ£¬FLASH¿Õ¼ä4K£¬²âÊÔÕý³££¬¹ÊÊ¡ÂÔ,¿ª»ú¶¯»­
+  51   1              delay_ms(200);
+  52   1              OLED_DrawBMP(0,0,128,8,BMP1);   //Í¼Æ¬ÏÔÊ¾(Í¼Æ¬ÏÔÊ¾É÷ÓÃ£¬Éú³ÉµÄ×Ö±í½Ï´ó£¬»áÕ¼ÓÃ½Ï¶à¿Õ¼ä£¬FLASH¿Õ¼ä8KÒÔÏÂÉ
+             -÷ÓÃ)
+  53   1              delay_ms(500);  */
+  54   1               
+C51 COMPILER V9.01   MAIN                                                                  10/20/2018 20:26:46 PAGE 2   
+
+  55   1              while(1)
+  56   1              {
+  57   2              time_day_out(&SIZE);
+  58   2              key_lest = key_check(key);
+  59   2              switch(key_lest)
+  60   2              {
+  61   3                      case 0:
+  62   3                      case 1:
+  63   3                      case 2:
+  64   3              }
+*** ERROR C141 IN LINE 64 OF MAIN.C: syntax error near '}'
+  65   2      //      OLED_ShowNum(56,2,time_two[2],3,&SIZE);
+  66   2      /*      OLED_ShowString(0,6,"ASCII:");  
+  67   2              OLED_ShowString(63,6,"CODE:");  
+  68   2              OLED_ShowNum(103,6,t,3,16);//ÏÔÊ¾ASCII×Ö·ûµÄÂëÖµ                */              
+  69   2              }
+  70   1      }         
+  71                  
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

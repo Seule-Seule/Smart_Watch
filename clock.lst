@@ -1,0 +1,144 @@
+C51 COMPILER V9.01   CLOCK                                                                 10/20/2018 20:26:46 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE CLOCK
+OBJECT MODULE PLACED IN clock.obj
+COMPILER INVOKED BY: C:\Program Files (x86)\Keil\C51\BIN\C51.EXE clock_c\clock.c BROWSE DEBUG OBJECTEXTEND PRINT(.\clock
+                    -.lst) OBJECT(clock.obj)
+
+line level    source
+
+   1          #include "clock.h"
+   2          uint clock_date,clock_sec_h,clock_sec_l,clock_min_h,clock_min_l,clock_hour_h,clock_hour_l,clock_day_h,cloc
+             -k_day_l,clock_mon_h,clock_mon_l,clock_year_h1,clock_year_h2,clock_year_l1,clock_year_l2;
+   3          uint clock_sec=0,clock_min=30,clock_hour=12,clock_day=19,clock_mon=10,clock_year=2018;
+   4          
+   5          
+   6          //12M¾§Õñ£¬Ã¿50msÒýÆðÒ»´ÎÖÐ¶Ï
+   7          void time_init()                           
+   8          {
+   9   1              TMOD = 0x01;                              //Ñ¡Ôñ¶¨Ê±Æ÷0¹¤×÷·½Ê½1
+  10   1              TH0 = 0x4C;                               //¶¨Ê±¿ØÖÆ£¬Ã¿50msÖÐ¶ÏÒ»´Î
+  11   1              TL0 = 0x00;
+  12   1              EA = 1;                                   //¿ª×ÜÖÐ¶Ï
+  13   1              ET0 = 0x01;                               //¿ªÆôt0ÖÐ¶ÏÔÊÐíÎ»
+  14   1              TR0 = 1;
+  15   1      }
+  16          
+  17          
+  18          //¶¨Ê±Æ÷·þÎñ×Óº¯Êý£¬ÊµÏÖÊ±·ÖÃë×ª»¯
+  19          void time0()interrupt 1
+  20          {
+  21   1              uint x;
+  22   1              TH0 = 0x4C;                                                               //¶¨Ê±Æ÷ÖØ×°
+  23   1              TL0 = 0x00;
+  24   1              clock_date++;
+  25   1              if(clock_date == 20)                            
+  26   1                      { clock_date = 0;clock_sec++;             //¼ÆÊ±´ïµ½Ò»Ãë
+  27   2              if(clock_sec == 60)
+  28   2                      {clock_sec = 0;clock_min++;}
+  29   2              if(clock_min == 60)
+  30   2                      {clock_min = 0;clock_hour++;}
+  31   2              if(clock_hour == 24)
+  32   2                      {clock_hour = 0;clock_day++;}
+  33   2              switch(clock_mon)
+  34   2          {
+  35   3              case 1:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  36   3                      case 3:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  37   3                      case 5:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  38   3              case 7:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  39   3              case 8:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  40   3              case 10:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  41   3              case 12:if(clock_day==32){clock_day=1;clock_mon++;}break;
+  42   3              case 4:if(clock_day==31){clock_day=1;clock_mon++;}break;
+  43   3              case 6:if(clock_day==31){clock_day=1;clock_mon++;}break;
+  44   3              case 9:if(clock_day==31){clock_day=1;clock_mon++;}break;
+  45   3              case 11:if(clock_day==31){clock_day=1;clock_mon++;}break;
+  46   3              case 2:x=20*100+clock_year;
+  47   3                              if((x%4==0 && x%100!=0) || x%400==0)
+  48   3                              {
+  49   4                                      if(clock_day==30) {clock_day=1;clock_mon++;break;}
+  50   4                              }
+  51   3                              else if(clock_day==29) {clock_day=1;clock_mon++;break;}
+  52   3              }
+  53   2              if(clock_mon == 13)
+C51 COMPILER V9.01   CLOCK                                                                 10/20/2018 20:26:46 PAGE 2   
+
+  54   2                      { clock_mon = 1;clock_year++;}
+  55   2              }
+  56   1              clock_sec_h = clock_sec/10;clock_sec_l = clock_sec%10;
+  57   1              clock_min_h = clock_min/10;clock_min_l = clock_min%10;
+  58   1              clock_hour_h = clock_hour/10;clock_hour_l = clock_hour%10;
+  59   1              clock_day_h = clock_day/10;clock_day_l = clock_day%10;
+  60   1              clock_mon_h = clock_mon/10;clock_mon_l = clock_mon%10;
+  61   1              clock_year_h1 = clock_year/1000; x = clock_year%1000;
+  62   1              clock_year_h2 = x/100;  x = x % 100;
+  63   1              clock_year_l1 = x/10;clock_year_l2 = x%10;
+  64   1      }
+  65          
+  66          void time_date(uchar *time1,uchar *day1,uchar *time2,uchar *day2,uchar *time_day)                        //Ê±¼äºÍÈÕÀú¸ñÊ½»¯º¯Ê
+             -ý
+  67          {
+  68   1              *time1 = '0'+clock_hour_h;                                                                                                   //Ê±¼ä¸ñÊ½»¯£¬Ê±¡¢·Ö
+  69   1              *(time1+1) = '0'+clock_hour_l;
+  70   1              *(time1+2) = ':';
+  71   1              *(time1+3) = '0'+clock_min_h;
+  72   1              *(time1+4) = '0'+clock_min_l;
+  73   1      
+  74   1          *day1 = '0'+clock_year_h1;                                                                                                                           //ÈÕÆÚ¸ñÊ½»¯£¬±ê×¼ÏÔÊ¾ÈÕÆÚ
+  75   1              *(day1+1) = '0'+clock_year_h2;
+  76   1              *(day1+2) = '0'+clock_year_l1;
+  77   1              *(day1+3) = '0'+clock_year_l2;
+  78   1              *(day1+4) = '/';
+  79   1              *(day1+5) = '0'+clock_mon_h;
+  80   1              *(day1+6) = '0'+clock_mon_l;
+  81   1              *(day1+7) = '/';
+  82   1              *(day1+8) = '0'+clock_day_h;
+  83   1              *(day1+9) = '0'+clock_day_l;
+  84   1              
+  85   1      
+  86   1              *time2 = (*time1)*10+(*(time1+1))-16;                                                                                                    //Ê±¼ä·Ö½â£¬Ê±¡¢·Ö¡¢ÃëÁ½Î»Ò»·Ö½â
+  87   1              *(time2+1) = (*(time1+3))*10+(*(time1+4))-16;
+  88   1              *(time2+2) = (48+clock_sec_h)*10+(48+clock_sec_l)-16;
+  89   1      
+  90   1              *day2 = (*day1)*1000+(*(day1+1))*100+(*(day1+2))*10+(*(day1+3));                                                 //ÈÕÆÚ·Ö½â£¬Äê¡¢ÔÂ¡¢ÈÕ
+  91   1              *(day2+1) = (*(day1+5))*10+(*(day1+6));
+  92   1              *(day2+1) = (*(day1+8))*10+(*(day1+9));
+  93   1              
+  94   1              *time_day = clock_hour_h;                                                                                                                                //Ê±·ÖÃëÄêÔÂÈÕ·Ö½â
+  95   1              *(time_day+1) = clock_hour_l;
+  96   1              *(time_day+2) = clock_min_h;
+  97   1              *(time_day+3) = clock_min_l;
+  98   1              *(time_day+4) = clock_sec_h;
+  99   1              *(time_day+5) = clock_sec_l;
+ 100   1              *(time_day+6) = clock_year_h1;
+ 101   1              *(time_day+7) = clock_year_h2;
+ 102   1              *(time_day+8) = clock_year_l1;
+ 103   1              *(time_day+9) = clock_year_l2;
+ 104   1              *(time_day+10) = clock_mon_h;
+ 105   1              *(time_day+11) = clock_mon_l;
+ 106   1              *(time_day+12) = clock_day_h;
+ 107   1              *(time_day+13) = clock_day_l;
+ 108   1      }
+ 109          
+ 110          
+ 111          
+ 112          
+ 113          
+ 114                                                            
+C51 COMPILER V9.01   CLOCK                                                                 10/20/2018 20:26:46 PAGE 3   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1435    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42      15
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
