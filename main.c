@@ -39,24 +39,26 @@ void int0_init()
 {
 	EX0 = 1;
 	IT0 = 1;
+	EA = 1;
 }
 
 //外部中断0服务函数
-void int0_key()  interrupt 0
+void int_0()  interrupt 0
 {
-
+	EX0 = 0;
 	if(key1 == 0)
-		{delay_ms(10);if(key1 == 0)
+		{delay_ms(100);if(key1 == 0)
 			key_check = 1;
 		}
 	if(key2 == 0)
-		{delay_ms(10);if(key2 == 0)
+		{delay_ms(100);if(key2 == 0)
 			key_check = 2;
 		}
 	if(key3 == 0)
-		{delay_ms(10);if(key3 == 0)
+		{delay_ms(100);if(key3 == 0)
 			key_check = 3;
 		}
+	EX0 = 1;
 }
 
 
@@ -77,7 +79,8 @@ void time_day_out()
 
 void time_day_seting()
 {
-	uchar key2_logger = 0;
+	uint key2_logger = 0;
+	OLED_Clear();
 	SIZE = 16;
 	while(1)
 	{
@@ -148,6 +151,9 @@ void  main()
 	OLED_Init();			        //初始化OLED  
 	OLED_Clear();				
 	time_init(); 
+	int0_init();
+	PX0 = 1;
+	PT0 = 0;
 /*	OLED_Clear();					//8051测试，FLASH空间4K，测试正常，故省略,开机动画
 	delay_ms(200);
 	OLED_DrawBMP(0,0,128,8,BMP1);   //图片显示(图片显示慎用，生成的字表较大，会占用较多空间，FLASH空间8K以下慎用)
@@ -155,7 +161,7 @@ void  main()
 	 
 	while(1)
 	{
-		if(key_check != 0)
+		while(key_check)
 		{
 			switch(key_check)
 			{
