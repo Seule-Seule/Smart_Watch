@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   KEY                                                                   10/20/2018 20:26:46 PAGE 1   
+C51 COMPILER V9.01   KEY                                                                   10/21/2018 08:58:51 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE KEY
@@ -16,22 +16,24 @@ line level    source
    6          uchar key_check(uchar *key)
    7          {
    8   1              uchar i;
-   9   1              for(i = 0;i < 3;i++)
-  10   1              {
-  11   2                      if((*(key+i)) == 0)
-  12   2                      {
-  13   3                              delay_ms(10);
-  14   3                              if((*(key+i)) == 0)
-  15   3                              return i;
-  16   3                      }
-  17   2              else return 4;
-  18   2              }
-  19   1      }
-*** WARNING C291 IN LINE 19 OF KEY_C\KEY.C: not every exit path returns a value
+   9   1              (*key) = key1;
+  10   1              (*(key+1)) = key2;
+  11   1              (*(key+2)) = key3;
+  12   1              for(i = 0;i < 3;i++)
+  13   1              {
+  14   2                      if((*(key+i)) == 0)
+  15   2                      {
+  16   3                              delay_ms(10);
+  17   3                              if((*(key+i)) == 0)
+  18   3                              return i;break;
+  19   3                      }
+  20   2              }
+  21   1              return 4;
+  22   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     65    ----
+   CODE SIZE        =     97    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
@@ -41,4 +43,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

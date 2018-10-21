@@ -379,9 +379,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>key_c</GroupName>
-        </Group>
-        <Group>
           <GroupName>oled_c</GroupName>
           <Files>
             <File>
@@ -390,12 +387,6 @@
               <FilePath>.\oled_c\oled.c</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>pulse_sensor_c</GroupName>
-        </Group>
-        <Group>
-          <GroupName>mma7455_c</GroupName>
         </Group>
         <Group>
           <GroupName>main()</GroupName>

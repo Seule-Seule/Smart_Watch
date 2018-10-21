@@ -11,7 +11,7 @@ void time_init()
 	TL0 = 0x00;
 	EA = 1;                                   //开总中断
 	ET0 = 0x01;                               //开启t0中断允许位
-	TR0 = 1;
+//	TR0 = 1;
 }
 
 
@@ -107,6 +107,64 @@ void time_date(uchar *time1,uchar *day1,uchar *time2,uchar *day2,uchar *time_day
 	*(time_day+13) = clock_day_l;
 }
 
+void clock_hour_addone()
+{
+	clock_hour++;
+	if(clock_hour == 24)
+		clock_hour = 0;
+}
+
+void clock_min_addone()
+{
+	clock_min++;
+	if(clock_min == 60)
+		clock_min = 0;
+}
+
+void clock_sec_addone()
+{
+	clock_sec++;
+	if(clock_sec == 60)
+		clock_sec = 0;
+}
+
+void clock_year_addone()
+{
+	clock_year++;
+}
+
+void clock_mon_addone()
+{
+	clock_mon++;
+	if(clock_mon == 13)
+		clock_mon = 1;
+}
+
+void clock_day_addone()
+{
+	uint x;
+	switch(clock_mon)
+    {
+        case 1:clock_day++;if(clock_day==32){clock_day=1;}break;
+		case 3:clock_day++;if(clock_day==32){clock_day=1;}break;
+   		case 5:clock_day++;if(clock_day==32){clock_day=1;}break;
+    	case 7:clock_day++;if(clock_day==32){clock_day=1;}break;
+    	case 8:clock_day++;if(clock_day==32){clock_day=1;}break;
+    	case 10:clock_day++;if(clock_day==32){clock_day=1;}break;
+    	case 12:clock_day++;if(clock_day==32){clock_day=1;}break;
+    	case 4:clock_day++;if(clock_day==31){clock_day=1;}break;
+    	case 6:clock_day++;if(clock_day==31){clock_day=1;}break;
+    	case 9:clock_day++;if(clock_day==31){clock_day=1;}break;
+    	case 11:clock_day++;if(clock_day==31){clock_day=1;}break;
+    	case 2:x=20*100+clock_year;
+        		if((x%4==0 && x%100!=0) || x%400==0)
+           		{
+          			clock_day++;if(clock_day==30) {clock_day=1;break;}
+      			}
+        		else 
+				{clock_day++;if(clock_day==29) clock_day=1;break;}
+	}	
+}		
 
 
 

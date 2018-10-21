@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   MAIN                                                                  10/20/2018 20:26:46 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  10/21/2018 10:59:22 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
@@ -23,64 +23,183 @@ line level    source
   14          #include "header_file/oled.h"
   15          //#include "header_file/bmp.h"                    //51²âÊÔ£¬½ÚÊ¡¿Õ¼ä                                      
   16          #include "clock_c/clock.h"
-  17          #include "key_c/key.h"
+  17          #include "delay_c/delay.h"
   18          
-  19          uchar time_one[6];                              //Ê±¼ä°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
-  20          uchar day_one[11];                              //ÈÕÆÚ°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
-  21          uchar time_two[4];                              //Ê±¼ä´¢´æÊý×é£¬Ê±·ÖÃë¸÷Õ¼Ò»Î»
-  22          uchar day_two[4];                               //ÈÕÆÚ´¢´æÊý×é£¬ÄêÔÂÈÕ¸÷Õ¼Ò»Î»
-  23          uchar time_day[13];                             //Î´¼ÆËãÆ«ÒÆµØÖ·µÄÊ±¼äÈÕÆÚ
-  24          uchar SIZE;                                             //×ÖÌå´óÐ¡Ñ¡Ôñ£¬16/12
-  25          uchar key[3] = 1;                                       //°´¼ü¼ì²âº¯Êý
-  26          uchar key_lest;                 //°´¼ü¼ì²â·µ»ØÖµ
-  27          
-  28          
-  29          void time_day_out(uchar *p)
-  30          {
-  31   1      
-  32   1              SIZE = *p;
-  33   1              time_date(time_one,day_one,time_two,day_two,time_day);  
-  34   1              OLED_ShowCHinese1(20,1,time_day[0]);// Ð¡Ê±
-  35   1              OLED_ShowCHinese1(37,1,time_day[1]);
-  36   1              OLED_ShowCHinese1(52,1,10);//:
-  37   1              OLED_ShowCHinese1(68,1,time_day[2]);//·ÖÖÓ
-  38   1              OLED_ShowCHinese1(85,1,time_day[3]);
-  39   1              OLED_ShowChar(102,2,time_day[4]+'0',&SIZE);
-  40   1              OLED_ShowChar(108,2,time_day[5]+'0',&SIZE);
-  41   1              SIZE = 12;
-  42   1              OLED_ShowString(47,5,day_one,&SIZE);
-  43   1      }
-  44          
-  45          void  main()
-  46          {                 
-  47   1              OLED_Init();                            //³õÊ¼»¯OLED  
-  48   1              OLED_Clear();
-  49   1              time_init(); 
-  50   1      /*      OLED_Clear();                                   //8051²âÊÔ£¬FLASH¿Õ¼ä4K£¬²âÊÔÕý³££¬¹ÊÊ¡ÂÔ,¿ª»ú¶¯»­
-  51   1              delay_ms(200);
-  52   1              OLED_DrawBMP(0,0,128,8,BMP1);   //Í¼Æ¬ÏÔÊ¾(Í¼Æ¬ÏÔÊ¾É÷ÓÃ£¬Éú³ÉµÄ×Ö±í½Ï´ó£¬»áÕ¼ÓÃ½Ï¶à¿Õ¼ä£¬FLASH¿Õ¼ä8KÒÔÏÂÉ
+  19          //°´¼ü¶¨Òå
+  20          sbit key1 = P1^5;
+  21          sbit key2 = P1^6;
+  22          sbit key3 = P1^7;
+  23          sbit int0 = P3^2;
+  24          
+  25          uchar time_one[6];                              //Ê±¼ä°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
+  26          uchar day_one[11];                              //ÈÕÆÚ°´Î»·Ö½â,Ã¿¸öÊý×ÖÕ¼Ò»Î»
+  27          uchar time_two[4];                              //Ê±¼ä´¢´æÊý×é£¬Ê±·ÖÃë¸÷Õ¼Ò»Î»
+  28          uchar day_two[4];                               //ÈÕÆÚ´¢´æÊý×é£¬ÄêÔÂÈÕ¸÷Õ¼Ò»Î»
+  29          uchar time_day[13];                             //Î´¼ÆËãÆ«ÒÆµØÖ·µÄÊ±¼äÈÕÆÚ
+  30          uchar SIZE = 16;                                                //×ÖÌå´óÐ¡Ñ¡Ôñ£¬16/12
+  31          
+  32          uchar key_check;
+  33          
+  34          
+  35          
+  36          
+  37          //Íâ²¿ÖÐ¶Ï³õÊ¼»¯º¯Êý£¬ÓÃÓÚ°´¼ü¼ì²â
+  38          void int0_init()
+  39          {
+  40   1              EX0 = 1;
+  41   1              IT0 = 1;
+  42   1      }
+  43          
+  44          //Íâ²¿ÖÐ¶Ï0·þÎñº¯Êý
+  45          void int0_key()  interrupt 0
+  46          {
+  47   1      
+  48   1              if(key1 == 0)
+  49   1                      {delay_ms(10);if(key1 == 0)
+  50   2                              key_check = 1;
+  51   2                      }
+  52   1              if(key2 == 0)
+  53   1                      {delay_ms(10);if(key2 == 0)
+  54   2                              key_check = 2;
+  55   2                      }
+C51 COMPILER V9.01   MAIN                                                                  10/21/2018 10:59:22 PAGE 2   
+
+  56   1              if(key3 == 0)
+  57   1                      {delay_ms(10);if(key3 == 0)
+  58   2                              key_check = 3;
+  59   2                      }
+  60   1      }
+  61          
+  62          
+  63          void time_day_out()
+  64          {
+  65   1              TR0 = 1;
+  66   1              time_date(time_one,day_one,time_two,day_two,time_day);  
+  67   1              OLED_ShowCHinese1(20,1,time_day[0]);// Ð¡Ê±
+  68   1              OLED_ShowCHinese1(37,1,time_day[1]);
+  69   1              OLED_ShowCHinese1(52,1,10);//:
+  70   1              OLED_ShowCHinese1(68,1,time_day[2]);//·ÖÖÓ
+  71   1              OLED_ShowCHinese1(85,1,time_day[3]);
+  72   1              SIZE = 12;
+  73   1              OLED_ShowChar(102,2,time_day[4]+'0',&SIZE);
+  74   1              OLED_ShowChar(108,2,time_day[5]+'0',&SIZE);
+  75   1              OLED_ShowString(47,5,day_one,&SIZE);
+  76   1      }
+  77          
+  78          void time_day_seting()
+  79          {
+  80   1              uchar key2_logger = 0;
+  81   1              SIZE = 16;
+  82   1              while(1)
+  83   1              {
+  84   2                      OLED_ShowString(8,0,"Please set hour:",&SIZE);
+  85   2                      switch(key_check)
+  86   2                      {
+  87   3                              case 1:break;
+  88   3                              case 2:key2_logger++;break;
+  89   3                              case 3:clock_hour_addone();break;
+  90   3                      }
+  91   2                      while(key2_logger == 1)
+  92   2                      {
+  93   3                              OLED_ShowString(8,0,"Please set minute:",&SIZE);
+  94   3                              switch(key_check)
+  95   3                              {
+  96   4                                      case 1:break;
+  97   4                                      case 2:key2_logger++;break;
+  98   4                                      case 3:clock_min_addone();break;
+  99   4                              }       
+ 100   3                      }
+ 101   2                      while(key2_logger == 2)
+ 102   2                      {
+ 103   3                              OLED_ShowString(8,0,"Please set second:",&SIZE);
+ 104   3                              switch(key_check)
+ 105   3                              {
+ 106   4                                      case 1:break;
+ 107   4                                      case 2:key2_logger++;break;
+ 108   4                                      case 3:clock_sec_addone();break;
+ 109   4                              }       
+ 110   3                      }
+ 111   2                      while(key2_logger == 3)
+ 112   2                      {
+ 113   3                              OLED_ShowString(8,0,"Please set year:",&SIZE);
+ 114   3                              switch(key_check)
+ 115   3                              {
+ 116   4                                      case 1:break;
+ 117   4                                      case 2:key2_logger++;break;
+C51 COMPILER V9.01   MAIN                                                                  10/21/2018 10:59:22 PAGE 3   
+
+ 118   4                                      case 3:clock_year_addone();break;
+ 119   4                              }       
+ 120   3                      }
+ 121   2                      while(key2_logger == 4)
+ 122   2                      {
+ 123   3                              OLED_ShowString(8,0,"Please set month:",&SIZE);
+ 124   3                              switch(key_check)
+ 125   3                              {
+ 126   4                                      case 1:break;
+ 127   4                                      case 2:key2_logger++;break;
+ 128   4                                      case 3:clock_mon_addone();break;
+ 129   4                              }       
+ 130   3                      }
+ 131   2                      while(key2_logger == 5)
+ 132   2                      {
+ 133   3                              OLED_ShowString(8,0,"Please set day:",&SIZE);
+ 134   3                              switch(key_check)
+ 135   3                              {
+ 136   4                                      case 1:break;
+ 137   4                                      case 2:key2_logger++;break;
+ 138   4                                      case 3:clock_day_addone();break;
+ 139   4                              }       
+ 140   3                      }
+ 141   2                      break;  
+ 142   2              }
+ 143   1      }
+ 144          
+ 145          
+ 146          void  main()
+ 147          {                 
+ 148   1              OLED_Init();                            //³õÊ¼»¯OLED  
+ 149   1              OLED_Clear();                           
+ 150   1              time_init(); 
+ 151   1      /*      OLED_Clear();                                   //8051²âÊÔ£¬FLASH¿Õ¼ä4K£¬²âÊÔÕý³££¬¹ÊÊ¡ÂÔ,¿ª»ú¶¯»­
+ 152   1              delay_ms(200);
+ 153   1              OLED_DrawBMP(0,0,128,8,BMP1);   //Í¼Æ¬ÏÔÊ¾(Í¼Æ¬ÏÔÊ¾É÷ÓÃ£¬Éú³ÉµÄ×Ö±í½Ï´ó£¬»áÕ¼ÓÃ½Ï¶à¿Õ¼ä£¬FLASH¿Õ¼ä8KÒÔÏÂÉ
              -÷ÓÃ)
-  53   1              delay_ms(500);  */
-  54   1               
-C51 COMPILER V9.01   MAIN                                                                  10/20/2018 20:26:46 PAGE 2   
+ 154   1              delay_ms(500);  */
+ 155   1               
+ 156   1              while(1)
+ 157   1              {
+ 158   2                      if(key_check != 0)
+ 159   2                      {
+ 160   3                              switch(key_check)
+ 161   3                              {
+ 162   4                                      case 1:time_day_seting();break;
+ 163   4      //                              case 2:stopwatch();break;
+ 164   4      //                              case 3:say_hello;
+ 165   4                              }       
+ 166   3                      }
+ 167   2                      time_day_out();         
+ 168   2      
+ 169   2      //      OLED_ShowNum(56,2,time_two[2],3,&SIZE);
+ 170   2      /*      OLED_ShowString(0,6,"ASCII:");  
+ 171   2              OLED_ShowString(63,6,"CODE:");  
+ 172   2              OLED_ShowNum(103,6,t,3,16);//ÏÔÊ¾ASCII×Ö·ûµÄÂëÖµ                */              
+ 173   2              }
+ 174   1      }         
+ 175                  
 
-  55   1              while(1)
-  56   1              {
-  57   2              time_day_out(&SIZE);
-  58   2              key_lest = key_check(key);
-  59   2              switch(key_lest)
-  60   2              {
-  61   3                      case 0:
-  62   3                      case 1:
-  63   3                      case 2:
-  64   3              }
-*** ERROR C141 IN LINE 64 OF MAIN.C: syntax error near '}'
-  65   2      //      OLED_ShowNum(56,2,time_two[2],3,&SIZE);
-  66   2      /*      OLED_ShowString(0,6,"ASCII:");  
-  67   2              OLED_ShowString(63,6,"CODE:");  
-  68   2              OLED_ShowNum(103,6,t,3,16);//ÏÔÊ¾ASCII×Ö·ûµÄÂëÖµ                */              
-  69   2              }
-  70   1      }         
-  71                  
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.01   MAIN                                                                  10/21/2018 10:59:22 PAGE 4   
+
+   CODE SIZE        =    557    ----
+   CONSTANT SIZE    =    106    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     40       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

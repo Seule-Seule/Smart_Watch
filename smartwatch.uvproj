@@ -376,21 +376,6 @@
               <FileType>5</FileType>
               <FilePath>.\clock_c\clock.h</FilePath>
             </File>
-            <File>
-              <FileName>key.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\key_c\key.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>key_c</GroupName>
-          <Files>
-            <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\key_c\key.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -404,13 +389,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>pulse_sensor_c</GroupName>
-        </Group>
-        <Group>
-          <GroupName>mma7455_c</GroupName>
-        </Group>
-        <Group>
-          <GroupName>main()</GroupName>
+          <GroupName>main_c</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>
