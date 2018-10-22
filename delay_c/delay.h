@@ -9,7 +9,6 @@
 *************************************************************/
 
 #define delay1us()	_nop_();_nop_()         //延时2us
-void delay10us();							//延时10us
 
 void delay1ms();							//延时1ms
 void delay_ms(usint s);			            //延时s ms

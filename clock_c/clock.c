@@ -16,7 +16,7 @@ void time_init()
 
 
 //定时器服务子函数，实现时分秒转化
-void time0()interrupt 1
+void time0()interrupt 1	
 {
 	uint x;
 	TH0 = 0x4C;								  //定时器重装

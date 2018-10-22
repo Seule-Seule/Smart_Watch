@@ -32,8 +32,6 @@ uchar SIZE = 16;						//字体大小选择，16/12
 uchar key_check;
 
 
-
-
 //外部中断初始化函数，用于按键检测
 void int0_init()
 {
@@ -42,24 +40,7 @@ void int0_init()
 	EA = 1;
 }
 
-//外部中断0服务函数
-void int_0()  interrupt 0
-{
-	EX0 = 0;
-	if(key1 == 0)
-		{delay_ms(100);if(key1 == 0)
-			key_check = 1;
-		}
-	if(key2 == 0)
-		{delay_ms(100);if(key2 == 0)
-			key_check = 2;
-		}
-	if(key3 == 0)
-		{delay_ms(100);if(key3 == 0)
-			key_check = 3;
-		}
-	EX0 = 1;
-}
+
 
 
 void time_day_out()
@@ -68,13 +49,17 @@ void time_day_out()
 	time_date(time_one,day_one,time_two,day_two,time_day);  
 	OLED_ShowCHinese1(20,1,time_day[0]);// 小时
 	OLED_ShowCHinese1(37,1,time_day[1]);
-	OLED_ShowCHinese1(52,1,10);//:
+	OLED_ShowCHinese1(52,1,10);         //:
 	OLED_ShowCHinese1(68,1,time_day[2]);//分钟
 	OLED_ShowCHinese1(85,1,time_day[3]);
 	SIZE = 12;
-	OLED_ShowChar(102,2,time_day[4]+'0',&SIZE);
+	OLED_ShowChar(102,2,time_day[4]+'0',&SIZE);		 //秒
 	OLED_ShowChar(108,2,time_day[5]+'0',&SIZE);
-	OLED_ShowString(47,5,day_one,&SIZE);
+	OLED_ShowString(47,5,day_one,&SIZE);			 //日期
+	OLED_ShowNum(0,6,time_two[2],3,&SIZE);          //底部秒数，测试OLED_ShowNum();函数 
+	SIZE = 16;
+	OLED_ShowString(0,5,"Seule",&SIZE);				   //logo
+	OLED_ShowCHinese(48,6,0);
 }
 
 void time_day_seting()
@@ -84,7 +69,7 @@ void time_day_seting()
 	SIZE = 16;
 	while(1)
 	{
-	 	OLED_ShowString(8,0,"Please set hour:",&SIZE);
+	 	OLED_ShowString(0,0,"Please set hour:",&SIZE);
 	 	switch(key_check)
 	 	{
 	 		case 1:break;
@@ -93,7 +78,7 @@ void time_day_seting()
 	 	}
 	 	while(key2_logger == 1)
 		{
-			OLED_ShowString(8,0,"Please set minute:",&SIZE);
+			OLED_ShowString(0,0,"Please set minute:",&SIZE);
 			switch(key_check)
 	 		{
 	 			case 1:break;
@@ -103,7 +88,7 @@ void time_day_seting()
 		}
 		while(key2_logger == 2)
 		{
-			OLED_ShowString(8,0,"Please set second:",&SIZE);
+			OLED_ShowString(0,0,"Please set second:",&SIZE);
 			switch(key_check)
 	 		{
 	 			case 1:break;
@@ -113,7 +98,7 @@ void time_day_seting()
 		}
 		while(key2_logger == 3)
 		{
-			OLED_ShowString(8,0,"Please set year:",&SIZE);
+			OLED_ShowString(0,0,"Please set year:",&SIZE);
 			switch(key_check)
 	 		{
 	 			case 1:break;
@@ -123,7 +108,7 @@ void time_day_seting()
 		}
 		while(key2_logger == 4)
 		{
-			OLED_ShowString(8,0,"Please set month:",&SIZE);
+			OLED_ShowString(0,0,"Please set month:",&SIZE);
 			switch(key_check)
 	 		{
 	 			case 1:break;
@@ -133,7 +118,7 @@ void time_day_seting()
 		}
 		while(key2_logger == 5)
 		{
-			OLED_ShowString(8,0,"Please set day:",&SIZE);
+			OLED_ShowString(0,0,"Please set day:",&SIZE);
 			switch(key_check)
 	 		{
 	 			case 1:break;
@@ -145,6 +130,28 @@ void time_day_seting()
 	}
 }
 
+
+
+//外部中断0服务函数
+void int_0()  interrupt 0 
+{
+	EX0 = 0;
+	if(key1 == 0)
+		{delay_ms(10);if(key1 == 0)
+			key_check = 1;
+		
+		}
+	if(key2 == 0)
+		{delay_ms(10);if(key2 == 0)
+			key_check = 2;
+		}
+	if(key3 == 0)
+		{delay_ms(10);if(key3 == 0)
+			key_check = 3;
+		}
+	int0 = 1;
+	EX0 = 1;
+}
 
 void  main()
 {		  
@@ -163,19 +170,16 @@ void  main()
 	{
 		while(key_check)
 		{
-			switch(key_check)
+			while(key_check)
 			{
-				case 1:time_day_seting();break;
-//				case 2:stopwatch();break;
-//				case 3:say_hello;
+				if(key_check == 1)	{time_day_seting();break;}
+//				if(key_check == 2)  {stopwatch();break;}
+//				if(key_check == 3)  {say_hello();break;}
 			}	
-		}
+		}			   
 		time_day_out();		
 
-//	OLED_ShowNum(56,2,time_two[2],3,&SIZE);
-/*	OLED_ShowString(0,6,"ASCII:");  
-	OLED_ShowString(63,6,"CODE:");  
-	OLED_ShowNum(103,6,t,3,16);//显示ASCII字符的码值 		*/		
+//	OLED_ShowNum(56,2,time_two[2],3,&SIZE);	
 	}
 }	  
 	
